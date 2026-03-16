@@ -689,7 +689,7 @@ ANTHEMS.forEach(a => {
   card.setAttribute('tabindex', '0');
 
   card.innerHTML = `
-    <audio id="audio-${a.id}" src="https://raw.githubusercontent.com/thedataknitters/europe-s-national-anthems/main/${a.id}.mp3" preload="none"></audio>
+    <audio id="audio-${a.id}" src="${a.id}.mp3" preload="none"></audio>
     <div class="card-inner">
       <div class="anthem-title-row">
         <div class="anthem-title">${a.country}</div>
