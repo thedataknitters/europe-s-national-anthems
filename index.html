@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keys, Beats, and National Feats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2EFEB;
+    --surface: #e8e4de;
+    --card: #ffffff;
+    --card-hover: #f7f4f0;
+    --border: #d8d2c8;
+    --gold: #E27D5F;
+    --gold-light: #F2B680;
+    --gold-dim: #AF5A5D;
+    --text: #2c2825;
+    --text-muted: #6b6259;
+    --text-dim: #a09890;
+    --playing-glow: rgba(226, 125, 95, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grain overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.15;
+  }
+
+  header {
+    text-align: center;
+    padding: 72px 24px 48px;
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    display: block;
+    width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, #6C97B8, transparent);
+    margin: 32px auto 0;
+  }
+
+  .eyebrow {
+    font-family: 'Crimson Pro', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #6C97B8;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.1;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.15s forwards;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-top: 14px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.3s forwards;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2px;
+    padding: 0 2px 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s ease, border-color 0.25s ease;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    border-color: var(--gold-dim);
+  }
+
+  .card.playing {
+    background: #fdf5f0;
+    border-color: var(--gold);
+    box-shadow: inset 0 0 40px var(--playing-glow), 0 0 0 1px #E27D5F;
+  }
+
+  .card-inner { padding: 28px 28px 24px; }
+
+  /* country flag / code badge */
+  .anthem-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .flag {
+    font-size: 2.2rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover .flag, .card.playing .flag { transform: scale(1.15); }
+
+  .tempo-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 2px;
+    transition: color 0.25s, border-color 0.25s;
+  }
+
+  .card.playing .tempo-badge { color: var(--gold); border-color: var(--gold-dim); }
+
+  /* anthem name */
+  .anthem-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .anthem-translation {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+    transition: color 0.25s;
+  }
+
+  .card.playing .anthem-translation { color: var(--gold); }
+
+  .country-name {
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .intention {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    font-weight: 300;
+    font-style: italic;
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+    margin-bottom: 20px;
+    transition: border-color 0.25s;
+  }
+
+  .card.playing .intention { border-left-color: var(--gold-dim); }
+
+  .anthem-flag-img {
+    display: block;
+    margin: 0 auto 20px;
+    width: 80px;
+    height: auto;
+  }
+  .viz {
+    height: 48px;
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    margin-bottom: 20px;
+    padding: 0 2px;
+  }
+
+  .viz-bar {
+    flex: 1;
+    background: var(--border);
+    border-radius: 1px;
+    transition: background 0.3s ease, transform 0.3s ease;
+    transform-origin: bottom;
+  }
+
+  .card:hover .viz-bar { background: var(--gold-dim); }
+  .card.playing .viz-bar { background: var(--gold); }
+
+  /* animate bars when playing */
+  .card.playing .viz-bar {
+    animation: barBounce 0.6s ease-in-out infinite alternate;
+  }
+
+  .card.playing .viz-bar:nth-child(2n)   { animation-delay: 0.1s; animation-duration: 0.7s; }
+  .card.playing .viz-bar:nth-child(3n)   { animation-delay: 0.2s; animation-duration: 0.5s; }
+  .card.playing .viz-bar:nth-child(5n)   { animation-delay: 0.05s; animation-duration: 0.8s; }
+  .card.playing .viz-bar:nth-child(7n)   { animation-delay: 0.15s; animation-duration: 0.55s; }
+
+  @keyframes barBounce {
+    from { transform: scaleY(0.5); }
+    to   { transform: scaleY(1.25); }
+  }
+
+  /* ── PLAY BUTTON ── */
+  .play-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+  }
+
+  .play-btn:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold-light);
+    background: rgba(201, 168, 76, 0.05);
+  }
+
+  .card.playing .play-btn {
+    border-color: var(--gold);
+    color: var(--gold-light);
+    background: rgba(201, 168, 76, 0.08);
+  }
+
+  .play-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    padding-left: 2px; /* optical centering of triangle */
+    transition: background 0.2s;
+  }
+
+  .card.playing .play-icon {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--bg);
+  }
+
+  /* progress bar */
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    margin-top: 12px;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #F2B680, #E27D5F);
+    border-radius: 1px;
+    transition: width 0.25s linear;
+  }
+
+  /* note: using synth so progress stays at 0 in demo */
+
+  /* stagger card animations */
+  .card:nth-child(1)  { animation-delay: 0.05s; }
+  .card:nth-child(2)  { animation-delay: 0.08s; }
+  .card:nth-child(3)  { animation-delay: 0.11s; }
+  .card:nth-child(4)  { animation-delay: 0.14s; }
+  .card:nth-child(5)  { animation-delay: 0.17s; }
+  .card:nth-child(6)  { animation-delay: 0.20s; }
+  .card:nth-child(7)  { animation-delay: 0.23s; }
+  .card:nth-child(8)  { animation-delay: 0.26s; }
+  .card:nth-child(9)  { animation-delay: 0.29s; }
+  .card:nth-child(10) { animation-delay: 0.32s; }
+  .card:nth-child(11) { animation-delay: 0.35s; }
+  .card:nth-child(12) { animation-delay: 0.38s; }
+  .card:nth-child(13) { animation-delay: 0.41s; }
+  .card:nth-child(14) { animation-delay: 0.44s; }
+  .card:nth-child(15) { animation-delay: 0.47s; }
+  .card:nth-child(16) { animation-delay: 0.50s; }
+  .card:nth-child(17) { animation-delay: 0.53s; }
+  .card:nth-child(18) { animation-delay: 0.56s; }
+  .card:nth-child(19) { animation-delay: 0.59s; }
+  .card:nth-child(20) { animation-delay: 0.62s; }
+  .card:nth-child(21) { animation-delay: 0.65s; }
+  .card:nth-child(22) { animation-delay: 0.68s; }
+  .card:nth-child(23) { animation-delay: 0.71s; }
+  .card:nth-child(24) { animation-delay: 0.74s; }
+  .card:nth-child(25) { animation-delay: 0.77s; }
+  .card:nth-child(26) { animation-delay: 0.80s; }
+  .card:nth-child(27) { animation-delay: 0.83s; }
+  .card:nth-child(28) { animation-delay: 0.86s; }
+  .card:nth-child(29) { animation-delay: 0.89s; }
+  .card:nth-child(30) { animation-delay: 0.92s; }
+  .card:nth-child(31) { animation-delay: 0.95s; }
+  .card:nth-child(32) { animation-delay: 0.98s; }
+  .card:nth-child(33) { animation-delay: 1.01s; }
+  .card:nth-child(34) { animation-delay: 1.04s; }
+  .card:nth-child(35) { animation-delay: 1.07s; }
+  .card:nth-child(36) { animation-delay: 1.10s; }
+  .card:nth-child(37) { animation-delay: 1.13s; }
+  .card:nth-child(38) { animation-delay: 1.16s; }
+  .card:nth-child(39) { animation-delay: 1.19s; }
+  .card:nth-child(40) { animation-delay: 1.22s; }
+  .card:nth-child(41) { animation-delay: 1.25s; }
+  .card:nth-child(42) { animation-delay: 1.28s; }
+  .card:nth-child(43) { animation-delay: 1.31s; }
+  .card:nth-child(44) { animation-delay: 1.34s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* demo note banner */
+  .demo-note {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    padding: 10px 24px 20px;
+    font-style: italic;
+  }
+
+  /* filter bar */
+  .filter-bar {
+    max-width: 1400px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .filter-dropdown {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+    max-width: 360px;
+  }
+
+  .filter-trigger {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-radius: 2px;
+    transition: border-color 0.2s;
+  }
+
+  .filter-trigger:hover { border-color: var(--gold); }
+
+  .filter-trigger .arrow {
+    font-size: 0.6rem;
+    transition: transform 0.2s;
+    color: var(--text-muted);
+  }
+
+  .filter-dropdown.open .filter-trigger { border-color: var(--gold); }
+  .filter-dropdown.open .arrow { transform: rotate(180deg); }
+
+  .filter-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    z-index: 100;
+    max-height: 280px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  .filter-dropdown.open .filter-panel { display: block; }
+
+  .filter-search {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.9rem;
+    padding: 10px 14px;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .filter-option:hover { background: var(--card-hover); }
+
+  .filter-option input[type="checkbox"] {
+    accent-color: var(--gold);
+    width: 14px; height: 14px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .filter-clear {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .filter-clear:hover { border-color: var(--gold); color: var(--gold); }
+
+  .filter-count {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">An Auditory Atlas</p>
+  <h1>Keys, Beats, and <em>National Feats</em></h1>
+  <p class="subtitle">A snapshot of Europe's national anthems through tempo, tone and lyrics. Click any card — or press Play — to hear each nation's song</p>
+</header>
+
+<p class="demo-note">♪ All national anthem mp3's downloaded from <a href="https://nationalanthems.info" target="_blank" style="color: var(--text-muted); text-decoration: underline;">nationalanthems.info</a></p>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter by country</span>
+  <div class="filter-dropdown" id="filterDropdown">
+    <button class="filter-trigger" id="filterTrigger">
+      <span id="filterTriggerLabel">All countries</span>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="filter-panel">
+      <input class="filter-search" type="text" placeholder="Search countries…" id="filterSearch">
+      <div id="filterOptions"></div>
+    </div>
+  </div>
+  <button class="filter-clear" id="filterClear">Clear</button>
+  <span class="filter-count" id="filterCount"></span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>Keys, Beats, and National Feats · Prototype</footer>
+
+<script>
+const ANTHEMS = [
+  { id:'al', flag:'🇦🇱', country:'Albania',             title:'Himni i Flamurit',              translation:'Hymn to the Flag',                    tempo:92,  mood:'Defiant',    intention:'A proud oath of loyalty to the Albanian flag and the blood shed for freedom.' },
+  { id:'am', flag:'🇦🇲', country:'Armenia',             title:'Mer Hayrenik',                  translation:'Our Fatherland',                      tempo:80,  mood:'Solemn',     intention:'A call to reclaim the ancient homeland and raise the tricolour flag.' },
+  { id:'at', flag:'🇦🇹', country:'Austria',             title:'Bundeshymne',                   translation:'Federal Hymn',                        tempo:68,  mood:'Lyrical',    intention:'Praises Austria\'s landscape, its people, and a vibrant democracy.' },
+  { id:'az', flag:'🇦🇿', country:'Azerbaijan',          title:'Azərbaycan marşı',              translation:'March of Azerbaijan',                 tempo:100, mood:'Stirring',   intention:'Celebrates independence, the land of fire, and a bright future.' },
+  { id:'by', flag:'🇧🇾', country:'Belarus',             title:'My Belarusy',                   translation:'We, the Belarusians',                 tempo:76,  mood:'Steadfast',  intention:'A declaration of fraternal unity and loyalty to the Belarusian land.' },
+  { id:'be', flag:'🇧🇪', country:'Belgium',             title:'La Brabançonne',                translation:'The Brabantian',                      tempo:88,  mood:'Proud',      intention:'Celebrates the 1830 revolution that won Belgian independence.' },
+  { id:'ba', flag:'🇧🇦', country:'Bosnia and Herzegovina', title:'Intermeco',                  translation:'Intermezzo',                          tempo:72,  mood:'Hopeful',    intention:'An instrumental piece reflecting a nation forging shared identity after conflict.' },
+  { id:'bg', flag:'🇧🇬', country:'Bulgaria',            title:'Mila Rodino',                   translation:'Dear Motherland',                     tempo:84,  mood:'Tender',     intention:'A heartfelt ode to the beauty of the Bulgarian homeland and its mountains.' },
+  { id:'hr', flag:'🇭🇷', country:'Croatia',             title:'Lijepa naša domovino',          translation:'Our Beautiful Homeland',              tempo:76,  mood:'Lyrical',    intention:'A tender love song to the beautiful Croatian homeland.' },
+  { id:'cy', flag:'🇨🇾', country:'Cyprus',              title:'Hymn to Liberty',               translation:'Hymn to Liberty',                     tempo:70,  mood:'Reverent',   intention:'Shared with Greece — a 158-verse ode to the sacred spirit of freedom.' },
+  { id:'cz', flag:'🇨🇿', country:'Czechia',             title:'Kde domov můj',                 translation:'Where is My Home?',                   tempo:66,  mood:'Wistful',    intention:'A gentle, questioning love letter to the Czech landscape and people.' },
+  { id:'dk', flag:'🇩🇰', country:'Denmark',             title:'Der er et yndigt land',         translation:'There is a Lovely Land',              tempo:72,  mood:'Pastoral',   intention:'Celebrates Denmark\'s ancient beech forests and coastal shores.' },
+  { id:'ee', flag:'🇪🇪', country:'Estonia',             title:'Mu isamaa, mu õnn ja rõõm',    translation:'My Fatherland, My Joy and Happiness', tempo:68,  mood:'Gentle',     intention:'A quiet, grateful hymn to the Estonian fatherland as a source of joy.' },
+  { id:'fi', flag:'🇫🇮', country:'Finland',             title:'Maamme',                        translation:'Our Land',                            tempo:60,  mood:'Reverent',   intention:'A solemn contemplation of Finland\'s northern landscape and enduring spirit.' },
+  { id:'fr', flag:'🇫🇷', country:'France',              title:'La Marseillaise',               translation:'The Song of Marseille',               tempo:76,  mood:'Defiant',    intention:'A revolutionary battle cry urging citizens to arms against tyranny.' },
+  { id:'ge', flag:'🇬🇪', country:'Georgia',             title:'Tavisupleba',                   translation:'Freedom',                             tempo:78,  mood:'Spiritual',  intention:'A choral hymn to freedom, rooted in Georgia\'s ancient polyphonic tradition.' },
+  { id:'de', flag:'🇩🇪', country:'Germany',             title:'Das Lied der Deutschen',        translation:'The Song of the Germans',             tempo:96,  mood:'Solemn',     intention:'A call for unity, justice and freedom across a fractured nation.' },
+  { id:'gr', flag:'🇬🇷', country:'Greece',              title:'Hymn to Liberty',               translation:'Hymn to Liberty',                     tempo:70,  mood:'Reverent',   intention:'Shared with Cyprus — a sweeping epic poem set to music, honouring the Greek struggle for independence.' },
+  { id:'hu', flag:'🇭🇺', country:'Hungary',             title:'Himnusz',                       translation:'Hymn',                                tempo:58,  mood:'Mournful',   intention:'A prayer to God recounting Hungary\'s suffering and plea for mercy.' },
+  { id:'is', flag:'🇮🇸', country:'Iceland',             title:'Lofsöngur',                     translation:'Song of Praise',                      tempo:62,  mood:'Spiritual',  intention:'A hymn of thanks to God for Iceland\'s thousand years of settlement.' },
+  { id:'ie', flag:'🇮🇪', country:'Ireland',             title:'Amhrán na bhFiann',             translation:'The Soldier\'s Song',                 tempo:104, mood:'Resolute',   intention:'A soldier\'s song pledging to fight for Irish freedom from British rule.' },
+  { id:'it', flag:'🇮🇹', country:'Italy',               title:'Il Canto degli Italiani',       translation:'The Song of the Italians',            tempo:120, mood:'Stirring',   intention:'A Risorgimento hymn calling Italians to unite and be free.' },
+  { id:'xk', flag:'🇽🇰', country:'Kosovo',              title:'Europa',                        translation:'Europe',                              tempo:80,  mood:'Hopeful',    intention:'An instrumental piece symbolising Kosovo\'s European aspirations and new beginnings.' },
+  { id:'lv', flag:'🇱🇻', country:'Latvia',              title:'Dievs, svētī Latviju',          translation:'God Bless Latvia',                    tempo:66,  mood:'Prayerful',  intention:'A simple, sincere prayer asking God to bless and protect Latvia.' },
+  { id:'lt', flag:'🇱🇹', country:'Lithuania',           title:'Tautiška giesmė',               translation:'National Hymn',                       tempo:72,  mood:'Earnest',    intention:'A song of national unity calling Lithuanians to love their homeland.' },
+  { id:'lu', flag:'🇱🇺', country:'Luxembourg',          title:'Ons Heemecht',                  translation:'Our Homeland',                        tempo:70,  mood:'Warm',       intention:'A fond tribute to Luxembourg\'s rivers, oak trees, and beloved homeland.' },
+  { id:'mt', flag:'🇲🇹', country:'Malta',               title:'L-Innu Malti',                  translation:'The Maltese Hymn',                    tempo:64,  mood:'Devout',     intention:'A prayer for God\'s protection over Malta, its culture, and its people.' },
+  { id:'md', flag:'🇲🇩', country:'Moldova',             title:'Limba noastră',                 translation:'Our Language',                        tempo:88,  mood:'Passionate', intention:'A celebration of the Romanian language as the soul of Moldovan identity.' },
+  { id:'me', flag:'🇲🇪', country:'Montenegro',          title:'Oj, svijetla majska zoro',      translation:'Oh, Bright Dawn of May',              tempo:84,  mood:'Proud',      intention:'Hails the bright May dawn and Montenegro\'s mountainous spirit of freedom.' },
+  { id:'nl', flag:'🇳🇱', country:'Netherlands',         title:'Het Wilhelmus',                 translation:'The William',                         tempo:80,  mood:'Reflective', intention:'The world\'s oldest anthem — a personal prayer from William of Orange.' },
+  { id:'mk', flag:'🇲🇰', country:'North Macedonia',     title:'Denes nad Makedonija',          translation:'Today Over Macedonia',                tempo:96,  mood:'Triumphant', intention:'Celebrates the new sun of liberty rising over Macedonia.' },
+  { id:'no', flag:'🇳🇴', country:'Norway',              title:'Ja, vi elsker dette landet',    translation:'Yes, We Love This Land',              tempo:80,  mood:'Devoted',    intention:'A declaration of love for Norway\'s rugged landscape and storied history.' },
+  { id:'pl', flag:'🇵🇱', country:'Poland',              title:'Mazurek Dąbrowskiego',          translation:'Dąbrowski\'s Mazurka',                tempo:116, mood:'Resolute',   intention:'Defiant march declaring Poland is not yet lost while its people live.' },
+  { id:'pt', flag:'🇵🇹', country:'Portugal',            title:'A Portuguesa',                  translation:'The Portuguese',                      tempo:104, mood:'Heroic',     intention:'Rousing call to resist foreign domination and uphold the homeland.' },
+  { id:'ro', flag:'🇷🇴', country:'Romania',             title:'Deșteaptă-te, române',          translation:'Awaken Thee, Romanian',               tempo:108, mood:'Urgent',     intention:'A rousing wake-up call urging Romanians to rise and defend their heritage.' },
+  { id:'rs', flag:'🇷🇸', country:'Serbia',              title:'Bože pravde',                   translation:'God of Justice',                      tempo:72,  mood:'Solemn',     intention:'A prayer to the God of justice to unite and protect the Serbian people.' },
+  { id:'sk', flag:'🇸🇰', country:'Slovakia',            title:'Nad Tatrou sa blýska',          translation:'Lightning Over the Tatras',           tempo:112, mood:'Stormy',     intention:'Uses the image of lightning over the Tatra mountains as a symbol of national awakening.' },
+  { id:'si', flag:'🇸🇮', country:'Slovenia',            title:'Zdravljica',                    translation:'A Toast',                             tempo:96,  mood:'Convivial',  intention:'A toast to freedom, peace, and friendship among all nations.' },
+  { id:'es', flag:'🇪🇸', country:'Spain',               title:'La Marcha Real',                translation:'The Royal March',                     tempo:72,  mood:'Stately',    intention:'One of the few anthems with no official lyrics — pure ceremonial march.' },
+  { id:'se', flag:'🇸🇪', country:'Sweden',              title:'Du gamla, du fria',             translation:'Thou Ancient, Thou Free',             tempo:64,  mood:'Tender',     intention:'A gentle, voluntary ode to the ancient, free northern land.' },
+  { id:'ch', flag:'🇨🇭', country:'Switzerland',         title:'Schweizer Psalm',               translation:'Swiss Psalm',                         tempo:58,  mood:'Pastoral',   intention:'A contemplative ode to alpine dawn and divine providence.' },
+  { id:'tr', flag:'🇹🇷', country:'Turkey',              title:'İstiklal Marşı',                translation:'Independence March',                  tempo:92,  mood:'Fierce',     intention:'A defiant hymn written during the War of Independence, vowing never to be subjugated.' },
+  { id:'ua', flag:'🇺🇦', country:'Ukraine',             title:'Shche ne vmerla Ukraina',       translation:'Ukraine Has Not Yet Perished',        tempo:104, mood:'Resolute',   intention:'Declares that Ukraine\'s glory has not yet perished and calls its people to unite.' },
+  { id:'gb', flag:'🇬🇧', country:'United Kingdom',      title:'God Save the King',             translation:'God Save the King',                   tempo:60,  mood:'Reverent',   intention:'A prayer for the sovereign\'s long reign and victory over enemies.' },
+];
+
+// ── Audio engine ──────────────────────────────────────────────
+// In production, replace synthTone() with a real <audio> element per card.
+// Each card already has: <audio id="audio-{id}" src="/your-anthems/{id}.mp3"></audio>
+// Then in togglePlay(), do: audioEl.play() / audioEl.pause()
+
+let audioCtx = null;
+let currentNode = null;
+let currentId = null;
+let gainNode = null;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0.18;
+    gainNode.connect(audioCtx.destination);
+  }
+  return audioCtx;
+}
+
+// Generates a short repeating melodic motif based on tempo
+function synthTone(tempo) {
+  const ctx = getAudioCtx();
+  const beatLen = 60 / tempo;
+  const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 349.23, 329.63, 293.66];
+  let t = ctx.currentTime + 0.05;
+  const nodes = [];
+
+  for (let rep = 0; rep < 40; rep++) {
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const env = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      env.gain.setValueAtTime(0, t);
+      env.gain.linearRampToValueAtTime(0.6, t + 0.02);
+      env.gain.exponentialRampToValueAtTime(0.001, t + beatLen * 0.85);
+      osc.connect(env);
+      env.connect(gainNode);
+      osc.start(t);
+      osc.stop(t + beatLen);
+      nodes.push(osc);
+      t += beatLen;
+    });
+  }
+  return { stop: () => nodes.forEach(n => { try { n.stop(); } catch(e){} }) };
+}
+
+function stopCurrent() {
+  if (currentNode) { currentNode.stop(); currentNode = null; }
+  if (currentId) {
+    const prevCard = document.querySelector(`[data-id="${currentId}"]`);
+    if (prevCard) {
+      prevCard.classList.remove('playing');
+      prevCard.querySelector('.play-label').textContent = 'Play';
+      prevCard.querySelector('.play-icon').textContent = '▶';
+    }
+    currentId = null;
+  }
+}
+
+function togglePlay(id, tempo, event) {
+  event.stopPropagation();
+  if (currentId === id) { stopCurrent(); return; }
+  stopCurrent();
+
+  const audioEl = document.getElementById('audio-' + id);
+  audioEl.play();
+  currentNode = { stop: () => { audioEl.pause(); audioEl.currentTime = 0; } };
+
+  currentId = id;
+  const card = document.querySelector(`[data-id="${id}"]`);
+  card.classList.add('playing');
+  card.querySelector('.play-label').textContent = 'Stop';
+  card.querySelector('.play-icon').textContent = '■';
+}
+
+// ── Build grid ────────────────────────────────────────────────
+function buildBars(tempo) {
+  // create 20 bars with heights proportional to a simple wave + randomness
+  const bars = [];
+  for (let i = 0; i < 20; i++) {
+    const base = 0.2 + 0.8 * Math.abs(Math.sin(i * 0.55 + tempo * 0.02));
+    const h = Math.round(8 + base * 38);
+    bars.push(h);
+  }
+  return bars;
+}
+
+const grid = document.getElementById('grid');
+
+ANTHEMS.forEach(a => {
+  const bars = buildBars(a.tempo);
+  const barHtml = bars.map(h => `<div class="viz-bar" style="height:${h}px"></div>`).join('');
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.id = a.id;
+  card.setAttribute('role', 'button');
+  card.setAttribute('aria-label', `Play ${a.title}`);
+  card.setAttribute('tabindex', '0');
+
+  card.innerHTML = `
+    <audio id="audio-${a.id}" src="https://raw.githubusercontent.com/thedataknitters/europe-s-national-anthems/blob/main/${a.id}.mp3" preload="none"></audio>
+    <div class="card-inner">
+      <div class="anthem-title-row">
+        <div class="anthem-title">${a.country}</div>
+        <span class="flag">${a.flag}</span>
+      </div>
+      <div class="anthem-translation">${a.translation}</div>
+      <div class="country-name">${a.title}</div>
+      <p class="intention">${a.intention}</p>
+      <img src="https://raw.githubusercontent.com/thedataknitters/europe-s-national-anthems/main/${a.id}_image.png" alt="" class="anthem-flag-img" aria-hidden="true">
+      <div class="viz">${barHtml}</div>
+      <button class="play-btn" aria-label="Play ${a.title}">
+        <span class="play-icon">▶</span>
+        <span class="play-label">Play</span>
+      </button>
+      <div class="progress-track"><div class="progress-fill" id="prog-${a.id}"></div></div>
+    </div>
+  `;
+
+  // click anywhere on card OR the button
+  card.addEventListener('click', (e) => togglePlay(a.id, a.tempo, e));
+  card.querySelector('.play-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    togglePlay(a.id, a.tempo, e);
+  });
+
+  // keyboard accessibility
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePlay(a.id, a.tempo, e); }
+  });
+
+  grid.appendChild(card);
+});
+
+// ── Filter logic ──────────────────────────────────────────────
+const filterDropdown = document.getElementById('filterDropdown');
+const filterTrigger  = document.getElementById('filterTrigger');
+const filterTriggerLabel = document.getElementById('filterTriggerLabel');
+const filterOptionsEl = document.getElementById('filterOptions');
+const filterSearch   = document.getElementById('filterSearch');
+const filterClear    = document.getElementById('filterClear');
+const filterCountEl  = document.getElementById('filterCount');
+
+let selectedIds = new Set();
+
+// Build checkbox list
+function renderOptions(query = '') {
+  filterOptionsEl.innerHTML = '';
+  const q = query.toLowerCase();
+  ANTHEMS.forEach(a => {
+    if (q && !a.country.toLowerCase().includes(q)) return;
+    const label = document.createElement('label');
+    label.className = 'filter-option';
+    label.innerHTML = `
+      <input type="checkbox" value="${a.id}" ${selectedIds.has(a.id) ? 'checked' : ''}>
+      <span>${a.flag} ${a.country}</span>
+    `;
+    label.querySelector('input').addEventListener('change', (e) => {
+      if (e.target.checked) selectedIds.add(a.id);
+      else selectedIds.delete(a.id);
+      applyFilter();
+    });
+    filterOptionsEl.appendChild(label);
+  });
+}
+
+function applyFilter() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    if (selectedIds.size === 0 || selectedIds.has(card.dataset.id)) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  // Update trigger label
+  if (selectedIds.size === 0) {
+    filterTriggerLabel.textContent = 'All countries';
+    filterCountEl.textContent = '';
+  } else {
+    const names = ANTHEMS.filter(a => selectedIds.has(a.id)).map(a => a.country);
+    filterTriggerLabel.textContent = names.length <= 2 ? names.join(', ') : `${names.length} countries selected`;
+    filterCountEl.textContent = `Showing ${selectedIds.size} of ${ANTHEMS.length}`;
+  }
+}
+
+// Toggle dropdown open/close
+filterTrigger.addEventListener('click', (e) => {
+  e.stopPropagation();
+  filterDropdown.classList.toggle('open');
+  if (filterDropdown.classList.contains('open')) {
+    filterSearch.value = '';
+    renderOptions();
+    filterSearch.focus();
+  }
+});
+
+// Close on outside click
+document.addEventListener('click', () => filterDropdown.classList.remove('open'));
+filterDropdown.addEventListener('click', e => e.stopPropagation());
+
+// Search within dropdown
+filterSearch.addEventListener('input', () => renderOptions(filterSearch.value));
+
+// Clear all selections
+filterClear.addEventListener('click', () => {
+  selectedIds.clear();
+  applyFilter();
+  renderOptions(filterSearch.value);
+});
+
+// Initial render
+renderOptions();
+</script>
+</body>
+</html>
