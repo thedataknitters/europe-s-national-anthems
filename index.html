@@ -199,11 +199,11 @@
   .anthem-flag-img {
     display: block;
     margin: 0 auto 20px;
-    width: 80px;
+    width: 96px;
     height: auto;
   }
   .viz {
-    height: 48px;
+    height: 24px;
     display: flex;
     align-items: flex-end;
     gap: 3px;
@@ -498,6 +498,30 @@
     font-style: italic;
   }
 
+  .type-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .type-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  .type-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+  }
+
   footer {
     text-align: center;
     padding: 24px;
@@ -513,10 +537,16 @@
 <header>
   <p class="eyebrow">An Auditory Atlas</p>
   <h1>Keys, Beats, and <em>National Feats</em></h1>
-  <p class="subtitle">A snapshot of Europe's national anthems through tempo, tone and lyrics. Click any card — or press Play — to hear each nation's song</p>
+  <p class="subtitle">A snapshot of Europe's national anthems through tempo, tone and lyrics. Click any card - or press Play - to hear each nation's song</p>
+  <p class="demo-note" style="margin-top: 1em;">♪ All national anthem mp3's downloaded from <a href="https://nationalanthems.info" target="_blank" style="color: var(--text-muted); text-decoration: underline;">nationalanthems.info</a>.<br>This project was originally produced as a static data visualisation for <a href="https://europeancorrespondent.com/en" target="_blank" style="color: var(--text-muted); text-decoration: underline;">The European Correspondent</a>.</p>
 </header>
 
-<p class="demo-note">♪ All national anthem mp3's downloaded from <a href="https://nationalanthems.info" target="_blank" style="color: var(--text-muted); text-decoration: underline;">nationalanthems.info</a></p>
+<div class="filter-bar">
+  <span class="filter-label">Explainer</span>
+</div>
+<div style="max-width: 1400px; margin: 0 auto 24px; padding: 0 24px;">
+  <img src="https://raw.githubusercontent.com/thedataknitters/europe-s-national-anthems/main/Explainer.png" alt="Explainer" style="width: 56%; height: auto; display: block;">
+</div>
 
 <div class="filter-bar">
   <span class="filter-label">Filter by country</span>
@@ -534,56 +564,73 @@
   <span class="filter-count" id="filterCount"></span>
 </div>
 
+<div class="filter-bar" id="typeFilterBar">
+  <span class="filter-label">Filter by intention</span>
+  <button class="type-btn active" data-type="">All types</button>
+  <button class="type-btn" data-type="Hymn">Hymn</button>
+  <button class="type-btn" data-type="Ode">Ode</button>
+  <button class="type-btn" data-type="Rallying cry">Rallying cry</button>
+  <button class="type-btn" data-type="No official lyrics">No official lyrics</button>
+</div>
+
+<div class="filter-bar" id="tempoFilterBar">
+  <span class="filter-label">Filter by tempo</span>
+  <button class="type-btn active" data-tempo="">All tempos</button>
+  <button class="type-btn" data-tempo="-80bpm">-80bpm</button>
+  <button class="type-btn" data-tempo="80-100bpm">80-100bpm</button>
+  <button class="type-btn" data-tempo="100bpm+">100bpm+</button>
+</div>
+
 <div class="grid" id="grid"></div>
 
 <footer>Keys, Beats, and National Feats · Prototype</footer>
 
 <script>
 const ANTHEMS = [
-  { id:'al', flag:'🇦🇱', country:'Albania',             title:'Himni i Flamurit',              translation:'Hymn to the Flag',                    tempo:92,  mood:'Defiant',    intention:'A proud oath of loyalty to the Albanian flag and the blood shed for freedom.' },
-  { id:'am', flag:'🇦🇲', country:'Armenia',             title:'Mer Hayrenik',                  translation:'Our Fatherland',                      tempo:80,  mood:'Solemn',     intention:'A call to reclaim the ancient homeland and raise the tricolour flag.' },
-  { id:'at', flag:'🇦🇹', country:'Austria',             title:'Bundeshymne',                   translation:'Federal Hymn',                        tempo:68,  mood:'Lyrical',    intention:'Praises Austria\'s landscape, its people, and a vibrant democracy.' },
-  { id:'az', flag:'🇦🇿', country:'Azerbaijan',          title:'Azərbaycan marşı',              translation:'March of Azerbaijan',                 tempo:100, mood:'Stirring',   intention:'Celebrates independence, the land of fire, and a bright future.' },
-  { id:'by', flag:'🇧🇾', country:'Belarus',             title:'My Belarusy',                   translation:'We, the Belarusians',                 tempo:76,  mood:'Steadfast',  intention:'A declaration of fraternal unity and loyalty to the Belarusian land.' },
-  { id:'be', flag:'🇧🇪', country:'Belgium',             title:'La Brabançonne',                translation:'The Brabantian',                      tempo:88,  mood:'Proud',      intention:'Celebrates the 1830 revolution that won Belgian independence.' },
-  { id:'ba', flag:'🇧🇦', country:'Bosnia and Herzegovina', title:'Intermeco',                  translation:'Intermezzo',                          tempo:72,  mood:'Hopeful',    intention:'An instrumental piece reflecting a nation forging shared identity after conflict.' },
-  { id:'bg', flag:'🇧🇬', country:'Bulgaria',            title:'Mila Rodino',                   translation:'Dear Motherland',                     tempo:84,  mood:'Tender',     intention:'A heartfelt ode to the beauty of the Bulgarian homeland and its mountains.' },
-  { id:'hr', flag:'🇭🇷', country:'Croatia',             title:'Lijepa naša domovino',          translation:'Our Beautiful Homeland',              tempo:76,  mood:'Lyrical',    intention:'A tender love song to the beautiful Croatian homeland.' },
-  { id:'cy', flag:'🇨🇾', country:'Cyprus',              title:'Hymn to Liberty',               translation:'Hymn to Liberty',                     tempo:70,  mood:'Reverent',   intention:'Shared with Greece — a 158-verse ode to the sacred spirit of freedom.' },
-  { id:'cz', flag:'🇨🇿', country:'Czechia',             title:'Kde domov můj',                 translation:'Where is My Home?',                   tempo:66,  mood:'Wistful',    intention:'A gentle, questioning love letter to the Czech landscape and people.' },
-  { id:'dk', flag:'🇩🇰', country:'Denmark',             title:'Der er et yndigt land',         translation:'There is a Lovely Land',              tempo:72,  mood:'Pastoral',   intention:'Celebrates Denmark\'s ancient beech forests and coastal shores.' },
-  { id:'ee', flag:'🇪🇪', country:'Estonia',             title:'Mu isamaa, mu õnn ja rõõm',    translation:'My Fatherland, My Joy and Happiness', tempo:68,  mood:'Gentle',     intention:'A quiet, grateful hymn to the Estonian fatherland as a source of joy.' },
-  { id:'fi', flag:'🇫🇮', country:'Finland',             title:'Maamme',                        translation:'Our Land',                            tempo:60,  mood:'Reverent',   intention:'A solemn contemplation of Finland\'s northern landscape and enduring spirit.' },
-  { id:'fr', flag:'🇫🇷', country:'France',              title:'La Marseillaise',               translation:'The Song of Marseille',               tempo:76,  mood:'Defiant',    intention:'A revolutionary battle cry urging citizens to arms against tyranny.' },
-  { id:'ge', flag:'🇬🇪', country:'Georgia',             title:'Tavisupleba',                   translation:'Freedom',                             tempo:78,  mood:'Spiritual',  intention:'A choral hymn to freedom, rooted in Georgia\'s ancient polyphonic tradition.' },
-  { id:'de', flag:'🇩🇪', country:'Germany',             title:'Das Lied der Deutschen',        translation:'The Song of the Germans',             tempo:96,  mood:'Solemn',     intention:'A call for unity, justice and freedom across a fractured nation.' },
-  { id:'gr', flag:'🇬🇷', country:'Greece',              title:'Hymn to Liberty',               translation:'Hymn to Liberty',                     tempo:70,  mood:'Reverent',   intention:'Shared with Cyprus — a sweeping epic poem set to music, honouring the Greek struggle for independence.' },
-  { id:'hu', flag:'🇭🇺', country:'Hungary',             title:'Himnusz',                       translation:'Hymn',                                tempo:58,  mood:'Mournful',   intention:'A prayer to God recounting Hungary\'s suffering and plea for mercy.' },
-  { id:'is', flag:'🇮🇸', country:'Iceland',             title:'Lofsöngur',                     translation:'Song of Praise',                      tempo:62,  mood:'Spiritual',  intention:'A hymn of thanks to God for Iceland\'s thousand years of settlement.' },
-  { id:'ie', flag:'🇮🇪', country:'Ireland',             title:'Amhrán na bhFiann',             translation:'The Soldier\'s Song',                 tempo:104, mood:'Resolute',   intention:'A soldier\'s song pledging to fight for Irish freedom from British rule.' },
-  { id:'it', flag:'🇮🇹', country:'Italy',               title:'Il Canto degli Italiani',       translation:'The Song of the Italians',            tempo:120, mood:'Stirring',   intention:'A Risorgimento hymn calling Italians to unite and be free.' },
-  { id:'xk', flag:'🇽🇰', country:'Kosovo',              title:'Europa',                        translation:'Europe',                              tempo:80,  mood:'Hopeful',    intention:'An instrumental piece symbolising Kosovo\'s European aspirations and new beginnings.' },
-  { id:'lv', flag:'🇱🇻', country:'Latvia',              title:'Dievs, svētī Latviju',          translation:'God Bless Latvia',                    tempo:66,  mood:'Prayerful',  intention:'A simple, sincere prayer asking God to bless and protect Latvia.' },
-  { id:'lt', flag:'🇱🇹', country:'Lithuania',           title:'Tautiška giesmė',               translation:'National Hymn',                       tempo:72,  mood:'Earnest',    intention:'A song of national unity calling Lithuanians to love their homeland.' },
-  { id:'lu', flag:'🇱🇺', country:'Luxembourg',          title:'Ons Heemecht',                  translation:'Our Homeland',                        tempo:70,  mood:'Warm',       intention:'A fond tribute to Luxembourg\'s rivers, oak trees, and beloved homeland.' },
-  { id:'mt', flag:'🇲🇹', country:'Malta',               title:'L-Innu Malti',                  translation:'The Maltese Hymn',                    tempo:64,  mood:'Devout',     intention:'A prayer for God\'s protection over Malta, its culture, and its people.' },
-  { id:'md', flag:'🇲🇩', country:'Moldova',             title:'Limba noastră',                 translation:'Our Language',                        tempo:88,  mood:'Passionate', intention:'A celebration of the Romanian language as the soul of Moldovan identity.' },
-  { id:'me', flag:'🇲🇪', country:'Montenegro',          title:'Oj, svijetla majska zoro',      translation:'Oh, Bright Dawn of May',              tempo:84,  mood:'Proud',      intention:'Hails the bright May dawn and Montenegro\'s mountainous spirit of freedom.' },
-  { id:'nl', flag:'🇳🇱', country:'Netherlands',         title:'Het Wilhelmus',                 translation:'The William',                         tempo:80,  mood:'Reflective', intention:'The world\'s oldest anthem — a personal prayer from William of Orange.' },
-  { id:'mk', flag:'🇲🇰', country:'North Macedonia',     title:'Denes nad Makedonija',          translation:'Today Over Macedonia',                tempo:96,  mood:'Triumphant', intention:'Celebrates the new sun of liberty rising over Macedonia.' },
-  { id:'no', flag:'🇳🇴', country:'Norway',              title:'Ja, vi elsker dette landet',    translation:'Yes, We Love This Land',              tempo:80,  mood:'Devoted',    intention:'A declaration of love for Norway\'s rugged landscape and storied history.' },
-  { id:'pl', flag:'🇵🇱', country:'Poland',              title:'Mazurek Dąbrowskiego',          translation:'Dąbrowski\'s Mazurka',                tempo:116, mood:'Resolute',   intention:'Defiant march declaring Poland is not yet lost while its people live.' },
-  { id:'pt', flag:'🇵🇹', country:'Portugal',            title:'A Portuguesa',                  translation:'The Portuguese',                      tempo:104, mood:'Heroic',     intention:'Rousing call to resist foreign domination and uphold the homeland.' },
-  { id:'ro', flag:'🇷🇴', country:'Romania',             title:'Deșteaptă-te, române',          translation:'Awaken Thee, Romanian',               tempo:108, mood:'Urgent',     intention:'A rousing wake-up call urging Romanians to rise and defend their heritage.' },
-  { id:'rs', flag:'🇷🇸', country:'Serbia',              title:'Bože pravde',                   translation:'God of Justice',                      tempo:72,  mood:'Solemn',     intention:'A prayer to the God of justice to unite and protect the Serbian people.' },
-  { id:'sk', flag:'🇸🇰', country:'Slovakia',            title:'Nad Tatrou sa blýska',          translation:'Lightning Over the Tatras',           tempo:112, mood:'Stormy',     intention:'Uses the image of lightning over the Tatra mountains as a symbol of national awakening.' },
-  { id:'si', flag:'🇸🇮', country:'Slovenia',            title:'Zdravljica',                    translation:'A Toast',                             tempo:96,  mood:'Convivial',  intention:'A toast to freedom, peace, and friendship among all nations.' },
-  { id:'es', flag:'🇪🇸', country:'Spain',               title:'La Marcha Real',                translation:'The Royal March',                     tempo:72,  mood:'Stately',    intention:'One of the few anthems with no official lyrics — pure ceremonial march.' },
-  { id:'se', flag:'🇸🇪', country:'Sweden',              title:'Du gamla, du fria',             translation:'Thou Ancient, Thou Free',             tempo:64,  mood:'Tender',     intention:'A gentle, voluntary ode to the ancient, free northern land.' },
-  { id:'ch', flag:'🇨🇭', country:'Switzerland',         title:'Schweizer Psalm',               translation:'Swiss Psalm',                         tempo:58,  mood:'Pastoral',   intention:'A contemplative ode to alpine dawn and divine providence.' },
-  { id:'tr', flag:'🇹🇷', country:'Turkey',              title:'İstiklal Marşı',                translation:'Independence March',                  tempo:92,  mood:'Fierce',     intention:'A defiant hymn written during the War of Independence, vowing never to be subjugated.' },
-  { id:'ua', flag:'🇺🇦', country:'Ukraine',             title:'Shche ne vmerla Ukraina',       translation:'Ukraine Has Not Yet Perished',        tempo:104, mood:'Resolute',   intention:'Declares that Ukraine\'s glory has not yet perished and calls its people to unite.' },
-  { id:'gb', flag:'🇬🇧', country:'United Kingdom',      title:'God Save the King',             translation:'God Save the King',                   tempo:60,  mood:'Reverent',   intention:'A prayer for the sovereign\'s long reign and victory over enemies.' },
+  { id:'al', flag:'🇦🇱', country:'Albania',             title:'Himni i Flamurit',              translation:'Hymn to the Flag',                    tempo:92,  mood:'Defiant',    type:'Rallying cry',      tempoRange:'80-100bpm', intention:'A proud oath of loyalty to the Albanian flag and the blood shed for freedom.' },
+  { id:'am', flag:'🇦🇲', country:'Armenia',             title:'Mer Hayrenik',                  translation:'Our Fatherland',                      tempo:80,  mood:'Solemn',     type:'Rallying cry',      tempoRange:'80-100bpm', intention:'A call to reclaim the ancient homeland and raise the tricolour flag.' },
+  { id:'at', flag:'🇦🇹', country:'Austria',             title:'Bundeshymne',                   translation:'Federal Hymn',                        tempo:68,  mood:'Lyrical',    type:'Ode',               tempoRange:'-80bpm',    intention:'Praises Austria\'s landscape, its people, and a vibrant democracy.' },
+  { id:'az', flag:'🇦🇿', country:'Azerbaijan',          title:'Azərbaycan marşı',              translation:'March of Azerbaijan',                 tempo:100, mood:'Stirring',   type:'Rallying cry',      tempoRange:'-80bpm',    intention:'Celebrates independence, the land of fire, and a bright future.' },
+  { id:'by', flag:'🇧🇾', country:'Belarus',             title:'My Belarusy',                   translation:'We, the Belarusians',                 tempo:76,  mood:'Steadfast',  type:'Ode',               tempoRange:'-80bpm',    intention:'A declaration of fraternal unity and loyalty to the Belarusian land.' },
+  { id:'be', flag:'🇧🇪', country:'Belgium',             title:'La Brabançonne',                translation:'The Brabantian',                      tempo:88,  mood:'Proud',      type:'Rallying cry',      tempoRange:'80-100bpm', intention:'Celebrates the 1830 revolution that won Belgian independence.' },
+  { id:'ba', flag:'🇧🇦', country:'Bosnia and Herzegovina', title:'Intermeco',                  translation:'Intermezzo',                          tempo:72,  mood:'Hopeful',    type:'No official lyrics', tempoRange:'-80bpm',    intention:'An instrumental piece reflecting a nation forging shared identity after conflict.' },
+  { id:'bg', flag:'🇧🇬', country:'Bulgaria',            title:'Mila Rodino',                   translation:'Dear Motherland',                     tempo:84,  mood:'Tender',     type:'Ode',               tempoRange:'-80bpm',    intention:'A heartfelt ode to the beauty of the Bulgarian homeland and its mountains.' },
+  { id:'hr', flag:'🇭🇷', country:'Croatia',             title:'Lijepa naša domovino',          translation:'Our Beautiful Homeland',              tempo:76,  mood:'Lyrical',    type:'Ode',               tempoRange:'-80bpm',    intention:'A tender love song to the beautiful Croatian homeland.' },
+  { id:'cy', flag:'🇨🇾', country:'Cyprus',              title:'Hymn to Liberty',               translation:'Hymn to Liberty',                     tempo:70,  mood:'Reverent',   type:'Rallying cry',      tempoRange:'80-100bpm', intention:'Shared with Greece — a 158-verse ode to the sacred spirit of freedom.' },
+  { id:'cz', flag:'🇨🇿', country:'Czechia',             title:'Kde domov můj',                 translation:'Where is My Home?',                   tempo:66,  mood:'Wistful',    type:'Ode',               tempoRange:'-80bpm',    intention:'A gentle, questioning love letter to the Czech landscape and people.' },
+  { id:'dk', flag:'🇩🇰', country:'Denmark',             title:'Der er et yndigt land',         translation:'There is a Lovely Land',              tempo:72,  mood:'Pastoral',   type:'Ode',               tempoRange:'-80bpm',    intention:'Celebrates Denmark\'s ancient beech forests and coastal shores.' },
+  { id:'ee', flag:'🇪🇪', country:'Estonia',             title:'Mu isamaa, mu õnn ja rõõm',    translation:'My Fatherland, My Joy and Happiness', tempo:68,  mood:'Gentle',     type:'Ode',               tempoRange:'-80bpm',    intention:'A quiet, grateful hymn to the Estonian fatherland as a source of joy.' },
+  { id:'fi', flag:'🇫🇮', country:'Finland',             title:'Maamme',                        translation:'Our Land',                            tempo:60,  mood:'Reverent',   type:'Ode',               tempoRange:'80-100bpm', intention:'A solemn contemplation of Finland\'s northern landscape and enduring spirit.' },
+  { id:'fr', flag:'🇫🇷', country:'France',              title:'La Marseillaise',               translation:'The Song of Marseille',               tempo:76,  mood:'Defiant',    type:'Rallying cry',      tempoRange:'100bpm+',   intention:'A revolutionary battle cry urging citizens to arms against tyranny.' },
+  { id:'ge', flag:'🇬🇪', country:'Georgia',             title:'Tavisupleba',                   translation:'Freedom',                             tempo:78,  mood:'Spiritual',  type:'Ode',               tempoRange:'-80bpm',    intention:'A choral hymn to freedom, rooted in Georgia\'s ancient polyphonic tradition.' },
+  { id:'de', flag:'🇩🇪', country:'Germany',             title:'Das Lied der Deutschen',        translation:'The Song of the Germans',             tempo:96,  mood:'Solemn',     type:'Rallying cry',      tempoRange:'-80bpm',    intention:'A call for unity, justice and freedom across a fractured nation.' },
+  { id:'gr', flag:'🇬🇷', country:'Greece',              title:'Hymn to Liberty',               translation:'Hymn to Liberty',                     tempo:70,  mood:'Reverent',   type:'Rallying cry',      tempoRange:'80-100bpm', intention:'Shared with Cyprus — a sweeping epic poem set to music, honouring the Greek struggle for independence.' },
+  { id:'hu', flag:'🇭🇺', country:'Hungary',             title:'Himnusz',                       translation:'Hymn',                                tempo:58,  mood:'Mournful',   type:'Hymn',              tempoRange:'-80bpm',    intention:'A prayer to God recounting Hungary\'s suffering and plea for mercy.' },
+  { id:'is', flag:'🇮🇸', country:'Iceland',             title:'Lofsöngur',                     translation:'Song of Praise',                      tempo:62,  mood:'Spiritual',  type:'Ode',               tempoRange:'-80bpm',    intention:'A hymn of thanks to God for Iceland\'s thousand years of settlement.' },
+  { id:'ie', flag:'🇮🇪', country:'Ireland',             title:'Amhrán na bhFiann',             translation:'The Soldier\'s Song',                 tempo:104, mood:'Resolute',   type:'Rallying cry',      tempoRange:'100bpm+',   intention:'A soldier\'s song pledging to fight for Irish freedom from British rule.' },
+  { id:'it', flag:'🇮🇹', country:'Italy',               title:'Il Canto degli Italiani',       translation:'The Song of the Italians',            tempo:120, mood:'Stirring',   type:'Rallying cry',      tempoRange:'100bpm+',   intention:'A Risorgimento hymn calling Italians to unite and be free.' },
+  { id:'xk', flag:'🇽🇰', country:'Kosovo',              title:'Europa',                        translation:'Europe',                              tempo:80,  mood:'Hopeful',    type:'No official lyrics', tempoRange:'-80bpm',    intention:'An instrumental piece symbolising Kosovo\'s European aspirations and new beginnings.' },
+  { id:'lv', flag:'🇱🇻', country:'Latvia',              title:'Dievs, svētī Latviju',          translation:'God Bless Latvia',                    tempo:66,  mood:'Prayerful',  type:'Hymn',              tempoRange:'-80bpm',    intention:'A simple, sincere prayer asking God to bless and protect Latvia.' },
+  { id:'lt', flag:'🇱🇹', country:'Lithuania',           title:'Tautiška giesmė',               translation:'National Hymn',                       tempo:72,  mood:'Earnest',    type:'Hymn',              tempoRange:'-80bpm',    intention:'A song of national unity calling Lithuanians to love their homeland.' },
+  { id:'lu', flag:'🇱🇺', country:'Luxembourg',          title:'Ons Heemecht',                  translation:'Our Homeland',                        tempo:70,  mood:'Warm',       type:'Ode',               tempoRange:'-80bpm',    intention:'A fond tribute to Luxembourg\'s rivers, oak trees, and beloved homeland.' },
+  { id:'mt', flag:'🇲🇹', country:'Malta',               title:'L-Innu Malti',                  translation:'The Maltese Hymn',                    tempo:64,  mood:'Devout',     type:'Hymn',              tempoRange:'-80bpm',    intention:'A prayer for God\'s protection over Malta, its culture, and its people.' },
+  { id:'md', flag:'🇲🇩', country:'Moldova',             title:'Limba noastră',                 translation:'Our Language',                        tempo:88,  mood:'Passionate', type:'Ode',               tempoRange:'80-100bpm', intention:'A celebration of the Romanian language as the soul of Moldovan identity.' },
+  { id:'me', flag:'🇲🇪', country:'Montenegro',          title:'Oj, svijetla majska zoro',      translation:'Oh, Bright Dawn of May',              tempo:84,  mood:'Proud',      type:'Ode',               tempoRange:'80-100bpm', intention:'Hails the bright May dawn and Montenegro\'s mountainous spirit of freedom.' },
+  { id:'nl', flag:'🇳🇱', country:'Netherlands',         title:'Het Wilhelmus',                 translation:'The William',                         tempo:80,  mood:'Reflective', type:'Hymn',              tempoRange:'80-100bpm', intention:'The world\'s oldest anthem — a personal prayer from William of Orange.' },
+  { id:'mk', flag:'🇲🇰', country:'North Macedonia',     title:'Denes nad Makedonija',          translation:'Today Over Macedonia',                tempo:96,  mood:'Triumphant', type:'Ode',               tempoRange:'-80bpm',    intention:'Celebrates the new sun of liberty rising over Macedonia.' },
+  { id:'no', flag:'🇳🇴', country:'Norway',              title:'Ja, vi elsker dette landet',    translation:'Yes, We Love This Land',              tempo:80,  mood:'Devoted',    type:'Ode',               tempoRange:'80-100bpm', intention:'A declaration of love for Norway\'s rugged landscape and storied history.' },
+  { id:'pl', flag:'🇵🇱', country:'Poland',              title:'Mazurek Dąbrowskiego',          translation:'Dąbrowski\'s Mazurka',                tempo:116, mood:'Resolute',   type:'Rallying cry',      tempoRange:'100bpm+',   intention:'Defiant march declaring Poland is not yet lost while its people live.' },
+  { id:'pt', flag:'🇵🇹', country:'Portugal',            title:'A Portuguesa',                  translation:'The Portuguese',                      tempo:104, mood:'Heroic',     type:'Rallying cry',      tempoRange:'100bpm+',   intention:'Rousing call to resist foreign domination and uphold the homeland.' },
+  { id:'ro', flag:'🇷🇴', country:'Romania',             title:'Deșteaptă-te, române',          translation:'Awaken Thee, Romanian',               tempo:108, mood:'Urgent',     type:'Rallying cry',      tempoRange:'100bpm+',   intention:'A rousing wake-up call urging Romanians to rise and defend their heritage.' },
+  { id:'rs', flag:'🇷🇸', country:'Serbia',              title:'Bože pravde',                   translation:'God of Justice',                      tempo:72,  mood:'Solemn',     type:'Hymn',              tempoRange:'80-100bpm', intention:'A prayer to the God of justice to unite and protect the Serbian people.' },
+  { id:'sk', flag:'🇸🇰', country:'Slovakia',            title:'Nad Tatrou sa blýska',          translation:'Lightning Over the Tatras',           tempo:112, mood:'Stormy',     type:'Rallying cry',      tempoRange:'80-100bpm', intention:'Uses the image of lightning over the Tatra mountains as a symbol of national awakening.' },
+  { id:'si', flag:'🇸🇮', country:'Slovenia',            title:'Zdravljica',                    translation:'A Toast',                             tempo:96,  mood:'Convivial',  type:'Hymn',              tempoRange:'80-100bpm', intention:'A toast to freedom, peace, and friendship among all nations.' },
+  { id:'es', flag:'🇪🇸', country:'Spain',               title:'La Marcha Real',                translation:'The Royal March',                     tempo:72,  mood:'Stately',    type:'No official lyrics', tempoRange:'-80bpm',    intention:'One of the few anthems with no official lyrics — pure ceremonial march.' },
+  { id:'se', flag:'🇸🇪', country:'Sweden',              title:'Du gamla, du fria',             translation:'Thou Ancient, Thou Free',             tempo:64,  mood:'Tender',     type:'Ode',               tempoRange:'-80bpm',    intention:'A gentle, voluntary ode to the ancient, free northern land.' },
+  { id:'ch', flag:'🇨🇭', country:'Switzerland',         title:'Schweizer Psalm',               translation:'Swiss Psalm',                         tempo:58,  mood:'Pastoral',   type:'Hymn',              tempoRange:'80-100bpm', intention:'A contemplative ode to alpine dawn and divine providence.' },
+  { id:'tr', flag:'🇹🇷', country:'Turkey',              title:'İstiklal Marşı',                translation:'Independence March',                  tempo:92,  mood:'Fierce',     type:'Rallying cry',      tempoRange:'80-100bpm', intention:'A defiant hymn written during the War of Independence, vowing never to be subjugated.' },
+  { id:'ua', flag:'🇺🇦', country:'Ukraine',             title:'Shche ne vmerla Ukraina',       translation:'Ukraine Has Not Yet Perished',        tempo:104, mood:'Resolute',   type:'Rallying cry',      tempoRange:'100bpm+',   intention:'Declares that Ukraine\'s glory has not yet perished and calls its people to unite.' },
+  { id:'gb', flag:'🇬🇧', country:'United Kingdom',      title:'God Save the King',             translation:'God Save the King',                   tempo:60,  mood:'Reverent',   type:'Hymn',              tempoRange:'-80bpm',    intention:'A prayer for the sovereign\'s long reign and victory over enemies.' },
 ];
 
 // ── Audio engine ──────────────────────────────────────────────
@@ -669,7 +716,7 @@ function buildBars(tempo) {
   const bars = [];
   for (let i = 0; i < 20; i++) {
     const base = 0.2 + 0.8 * Math.abs(Math.sin(i * 0.55 + tempo * 0.02));
-    const h = Math.round(8 + base * 38);
+    const h = Math.round((8 + base * 38) * 0.49);
     bars.push(h);
   }
   return bars;
@@ -697,8 +744,8 @@ ANTHEMS.forEach(a => {
       </div>
       <div class="anthem-translation">${a.translation}</div>
       <div class="country-name">${a.title}</div>
-      <p class="intention">${a.intention}</p>
       <img src="https://raw.githubusercontent.com/thedataknitters/europe-s-national-anthems/main/${a.id}_image.png" alt="" class="anthem-flag-img" aria-hidden="true">
+      <p class="intention">${a.intention}</p>
       <div class="viz">${barHtml}</div>
       <button class="play-btn" aria-label="Play ${a.title}">
         <span class="play-icon">▶</span>
@@ -733,6 +780,8 @@ const filterClear    = document.getElementById('filterClear');
 const filterCountEl  = document.getElementById('filterCount');
 
 let selectedIds = new Set();
+let selectedType = '';
+let selectedTempoRange = '';
 
 // Build checkbox list
 function renderOptions(query = '') {
@@ -758,14 +807,13 @@ function renderOptions(query = '') {
 function applyFilter() {
   const cards = document.querySelectorAll('.card');
   cards.forEach(card => {
-    if (selectedIds.size === 0 || selectedIds.has(card.dataset.id)) {
-      card.style.display = '';
-    } else {
-      card.style.display = 'none';
-    }
+    const anthem = ANTHEMS.find(a => a.id === card.dataset.id);
+    const countryMatch = selectedIds.size === 0 || selectedIds.has(card.dataset.id);
+    const typeMatch = selectedType === '' || anthem.type === selectedType;
+    const tempoMatch = selectedTempoRange === '' || anthem.tempoRange === selectedTempoRange;
+    card.style.display = (countryMatch && typeMatch && tempoMatch) ? '' : 'none';
   });
 
-  // Update trigger label
   if (selectedIds.size === 0) {
     filterTriggerLabel.textContent = 'All countries';
     filterCountEl.textContent = '';
@@ -775,6 +823,26 @@ function applyFilter() {
     filterCountEl.textContent = `Showing ${selectedIds.size} of ${ANTHEMS.length}`;
   }
 }
+
+// Type filter buttons
+document.querySelectorAll('.type-btn[data-type]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn[data-type]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedType = btn.dataset.type;
+    applyFilter();
+  });
+});
+
+// Tempo filter buttons
+document.querySelectorAll('.type-btn[data-tempo]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn[data-tempo]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedTempoRange = btn.dataset.tempo;
+    applyFilter();
+  });
+});
 
 // Toggle dropdown open/close
 filterTrigger.addEventListener('click', (e) => {
