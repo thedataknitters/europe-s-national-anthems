@@ -225,7 +225,7 @@
   .e-bar { flex: 1; background: var(--gold); border-radius: 1px; }
   .explainer-tempo-label { font-family: 'Crimson Pro', serif; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
   .explainer-bpm { font-weight: 600; color: var(--text); display: block; font-size: 0.82rem; letter-spacing: 0.05em; margin-bottom: 1px; }
-  .explainer-divider { width: 1px; background: var(--border); align-self: stretch; min-height: 60px; }
+  .explainer-divider { width: 1px; background: var(--border); align-self: stretch; min-height: 0; }
   .explainer-legend-items { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
   .explainer-legend-item { display: flex; align-items: center; gap: 8px; font-family: 'Crimson Pro', serif; font-size: 0.88rem; color: var(--text-muted); }
   .explainer-swatch { width: 32px; height: 14px; border-radius: 2px; flex-shrink: 0; }
@@ -568,9 +568,11 @@
     padding: 0 24px;
     display: flex;
     flex-wrap: wrap;
-    gap: 32px;
+    gap: 16px;
     align-items: flex-start;
   }
+
+  .explainer-divider { width: 1px; background: var(--border); align-self: stretch; min-height: 0; }
 
   .explainer-section { min-width: 150px; }
   .explainer-section.tempo   { flex: 3; }
@@ -839,8 +841,8 @@ const ANTHEMS = [
   { id:'mt', flag:'🇲🇹', country:'Malta',               title:'L-Innu Malti',                  translation:'The Maltese Hymn',                    tempo:64,  mood:'Devout',     type:'Hymn',              tempoRange:'-80bpm',    mentions:1,     intention:'A prayer for God\'s protection over Malta, its culture, and its people.' },
   { id:'md', flag:'🇲🇩', country:'Moldova',             title:'Limba noastră',                 translation:'Our Language',                        tempo:88,  mood:'Passionate', type:'Ode',               tempoRange:'80-100bpm',    mentions:0,  intention:'A celebration of the Romanian language as the soul of Moldovan identity.' },
   { id:'me', flag:'🇲🇪', country:'Montenegro',          title:'Oj, svijetla majska zoro',      translation:'Oh, Bright Dawn of May',              tempo:84,  mood:'Proud',      type:'Ode',               tempoRange:'80-100bpm',    mentions:9,  intention:'Hails the bright May dawn and Montenegro\'s mountainous spirit of freedom.' },
-  { id:'nl', flag:'🇳🇱', country:'Netherlands',         title:'Het Wilhelmus',                 translation:'The William',                         tempo:80,  mood:'Reflective', type:'Hymn',              tempoRange:'80-100bpm',    mentions:27,  intention:'The world\'s oldest anthem — a personal prayer from William of Orange.' },
-  { id:'mk', flag:'🇲🇰', country:'North Macedonia',     title:'Denes nad Makedonija',          translation:'Today Over Macedonia',                tempo:96,  mood:'Triumphant', type:'Ode',               tempoRange:'-80bpm',    mentions:1,     intention:'Celebrates the new sun of liberty rising over Macedonia.' },
+  { id:'nl', flag:'🇳🇱', country:'Netherlands',         title:'Het Wilhelmus',                 translation:'The William',                         tempo:80,  mood:'Reflective', type:'Hymn',              tempoRange:'80-100bpm',    mentions:2,  intention:'The world\'s oldest anthem — a personal prayer from William of Orange.' },
+  { id:'mk', flag:'🇲🇰', country:'North Macedonia',     title:'Denes nad Makedonija',          translation:'Today Over Macedonia',                tempo:96,  mood:'Triumphant', type:'Rallying cry',      tempoRange:'-80bpm',    mentions:7,     intention:'Celebrates the new sun of liberty rising over Macedonia.' },
   { id:'no', flag:'🇳🇴', country:'Norway',              title:'Ja, vi elsker dette landet',    translation:'Yes, We Love This Land',              tempo:80,  mood:'Devoted',    type:'Ode',               tempoRange:'80-100bpm',    mentions:1,  intention:'A declaration of love for Norway\'s rugged landscape and storied history.' },
   { id:'pl', flag:'🇵🇱', country:'Poland',              title:'Mazurek Dąbrowskiego',          translation:'Dąbrowski\'s Mazurka',                tempo:116, mood:'Resolute',   type:'Rallying cry',      tempoRange:'100bpm+',    mentions:10,    intention:'Defiant march declaring Poland is not yet lost while its people live.' },
   { id:'pt', flag:'🇵🇹', country:'Portugal',            title:'A Portuguesa',                  translation:'The Portuguese',                      tempo:104, mood:'Heroic',     type:'Rallying cry',      tempoRange:'100bpm+',    mentions:1,    intention:'Rousing call to resist foreign domination and uphold the homeland.' },
@@ -851,7 +853,7 @@ const ANTHEMS = [
   { id:'es', flag:'🇪🇸', country:'Spain',               title:'La Marcha Real',                translation:'The Royal March',                     tempo:72,  mood:'Stately',    type:'No official lyrics', tempoRange:'-80bpm',    mentions:0,     intention:'One of the few anthems with no official lyrics — pure ceremonial march.' },
   { id:'se', flag:'🇸🇪', country:'Sweden',              title:'Du gamla, du fria',             translation:'Thou Ancient, Thou Free',             tempo:64,  mood:'Tender',     type:'Ode',               tempoRange:'-80bpm',    mentions:0,     intention:'A gentle, voluntary ode to the ancient, free northern land.' },
   { id:'ch', flag:'🇨🇭', country:'Switzerland',         title:'Schweizer Psalm',               translation:'Swiss Psalm',                         tempo:58,  mood:'Pastoral',   type:'Hymn',              tempoRange:'80-100bpm',    mentions:1,  intention:'A contemplative ode to alpine dawn and divine providence.' },
-  { id:'tr', flag:'🇹🇷', country:'Turkey',              title:'İstiklal Marşı',                translation:'Independence March',                  tempo:92,  mood:'Fierce',     type:'Rallying cry',      tempoRange:'80-100bpm',    mentions:0,  intention:'A defiant hymn written during the War of Independence, vowing never to be subjugated.' },
+  { id:'tr', flag:'🇹🇷', country:'Türkiye',              title:'İstiklal Marşı',                translation:'Independence March',                  tempo:92,  mood:'Fierce',     type:'Rallying cry',      tempoRange:'80-100bpm',    mentions:0,  intention:'A defiant hymn written during the War of Independence, vowing never to be subjugated.' },
   { id:'ua', flag:'🇺🇦', country:'Ukraine',             title:'Shche ne vmerla Ukraina',       translation:'Ukraine Has Not Yet Perished',        tempo:104, mood:'Resolute',   type:'Rallying cry',      tempoRange:'100bpm+',    mentions:1,    intention:'Declares that Ukraine\'s glory has not yet perished and calls its people to unite.' },
   { id:'gb', flag:'🇬🇧', country:'United Kingdom',      title:'God Save the King',             translation:'God Save the King',                   tempo:60,  mood:'Reverent',   type:'Hymn',              tempoRange:'-80bpm',    mentions:0,     intention:'A prayer for the sovereign\'s long reign and victory over enemies.' },
 ];
