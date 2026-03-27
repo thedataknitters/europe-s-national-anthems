@@ -411,6 +411,7 @@
     padding: 0 24px;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 12px;
     flex-wrap: wrap;
   }
@@ -571,7 +572,10 @@
     align-items: flex-start;
   }
 
-  .explainer-section { flex: 1; min-width: 200px; }
+  .explainer-section { min-width: 150px; }
+  .explainer-section.tempo   { flex: 3; }
+  .explainer-section.intention { flex: 1; min-width: 140px; }
+  .explainer-section.mentions  { flex: 1; min-width: 150px; }
 
   .explainer-tempo-items {
     display: flex;
@@ -683,7 +687,7 @@
 
 <div class="explainer">
 
-  <div class="explainer-section">
+  <div class="explainer-section tempo">
     <p class="explainer-col-heading">Tempo</p>
     <div class="explainer-tempo-items">
 
@@ -699,30 +703,28 @@
 
       <div class="explainer-tempo-item">
         <div class="explainer-viz-placeholder">
-          <div class="e-bar" style="height:50%"></div>
-          <div class="e-bar" style="height:80%"></div>
-          <div class="e-bar" style="height:40%"></div>
-          <div class="e-bar" style="height:70%"></div>
-          <div class="e-bar" style="height:55%"></div>
-          <div class="e-bar" style="height:85%"></div>
-          <div class="e-bar" style="height:45%"></div>
-          <div class="e-bar" style="height:60%"></div>
+          <svg width="80" height="48" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="20" height="48" fill="#F0D18C"/>
+            <rect x="20" y="0" width="20" height="48" fill="#D8D5CC"/>
+            <rect x="40" y="0" width="20" height="48" fill="#F0D18C"/>
+            <rect x="60" y="0" width="20" height="48" fill="#D8D5CC"/>
+          </svg>
         </div>
         <div class="explainer-tempo-label"><span class="explainer-bpm">80-100bpm</span>Somewhere in between</div>
       </div>
 
       <div class="explainer-tempo-item">
         <div class="explainer-viz-placeholder">
-          <div class="e-bar" style="height:60%"></div>
-          <div class="e-bar" style="height:90%"></div>
-          <div class="e-bar" style="height:50%"></div>
-          <div class="e-bar" style="height:80%"></div>
-          <div class="e-bar" style="height:40%"></div>
-          <div class="e-bar" style="height:95%"></div>
-          <div class="e-bar" style="height:55%"></div>
-          <div class="e-bar" style="height:75%"></div>
-          <div class="e-bar" style="height:45%"></div>
-          <div class="e-bar" style="height:85%"></div>
+          <svg width="80" height="48" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="10" height="48" fill="#F0D18C"/>
+            <rect x="10" y="0" width="10" height="48" fill="#D8D5CC"/>
+            <rect x="20" y="0" width="10" height="48" fill="#F0D18C"/>
+            <rect x="30" y="0" width="10" height="48" fill="#D8D5CC"/>
+            <rect x="40" y="0" width="10" height="48" fill="#F0D18C"/>
+            <rect x="50" y="0" width="10" height="48" fill="#D8D5CC"/>
+            <rect x="60" y="0" width="10" height="48" fill="#F0D18C"/>
+            <rect x="70" y="0" width="10" height="48" fill="#D8D5CC"/>
+          </svg>
         </div>
         <div class="explainer-tempo-label"><span class="explainer-bpm">+100bpm</span>Tap your feet</div>
       </div>
@@ -732,7 +734,7 @@
 
   <div class="explainer-divider"></div>
 
-  <div class="explainer-section">
+  <div class="explainer-section intention">
     <p class="explainer-col-heading">Intention of lyrics</p>
     <div class="explainer-legend-items">
       <div class="explainer-legend-item">
@@ -756,11 +758,15 @@
 
   <div class="explainer-divider"></div>
 
-  <div class="explainer-section">
+  <div class="explainer-section mentions">
     <p class="explainer-col-heading">Number of mentions of the country or its people</p>
     <div class="explainer-mentions-circle"></div>
   </div>
 
+</div>
+
+<div style="max-width: 1400px; margin: 0 auto 32px; padding: 0 24px;">
+  <div style="height: 1px; background: linear-gradient(90deg, transparent, #6C97B8, transparent);"></div>
 </div>
 
 <div class="filter-bar">
