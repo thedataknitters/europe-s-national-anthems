@@ -50,7 +50,7 @@
     content: '';
     display: block;
     width: 120px; height: 1px;
-    background: linear-gradient(90deg, transparent, #6C97B8, transparent);
+    background: linear-gradient(90deg, transparent 0%, #d8d2c8 8%, #d8d2c8 92%, transparent 100%);
     margin: 32px auto 0;
   }
 
@@ -182,7 +182,7 @@
     margin-bottom: 14px;
   }
 
-  .intention {
+  .card .intention {
     font-size: 0.9rem;
     color: var(--text-muted);
     line-height: 1.55;
@@ -225,7 +225,7 @@
   .e-bar { flex: 1; background: var(--gold); border-radius: 1px; }
   .explainer-tempo-label { font-family: 'Crimson Pro', serif; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
   .explainer-bpm { font-weight: 600; color: var(--text); display: block; font-size: 0.82rem; letter-spacing: 0.05em; margin-bottom: 1px; }
-  .explainer-divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .explainer-divider { width: 1px; background: var(--border); align-self: stretch; min-height: 60px; }
   .explainer-legend-items { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
   .explainer-legend-item { display: flex; align-items: center; gap: 8px; font-family: 'Crimson Pro', serif; font-size: 0.88rem; color: var(--text-muted); }
   .explainer-swatch { width: 32px; height: 14px; border-radius: 2px; flex-shrink: 0; }
@@ -618,13 +618,6 @@
     letter-spacing: 0.05em;
   }
 
-  .explainer-divider {
-    width: 1px;
-    background: var(--border);
-    align-self: stretch;
-    min-height: 60px;
-  }
-
   .explainer-legend-items {
     display: flex;
     flex-direction: column;
@@ -766,7 +759,7 @@
 </div>
 
 <div style="max-width: 1400px; margin: 0 auto 32px; padding: 0 24px;">
-  <div style="height: 1px; background: linear-gradient(90deg, transparent, #6C97B8, transparent);"></div>
+  <div style="height: 1px; background: linear-gradient(90deg, transparent 0%, #d8d2c8 8%, #d8d2c8 92%, transparent 100%);"></div>
 </div>
 
 <div class="filter-bar">
@@ -794,7 +787,6 @@
   <button class="type-btn" data-mentions="10+">10+</button>
 </div>
 
-<div class="filter-bar" id="intentionFilterBar">
 <div class="filter-bar" id="intentionFilterBar">
   <span class="filter-label">Filter by intention</span>
   <button class="type-btn active" data-type="">All types</button>
